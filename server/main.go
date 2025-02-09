@@ -11,15 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @title Ecommerce API
-// @version 1.0
-// @description API for Ecommerce platform
-// @host localhost:8080
-// @BasePath /
 func main() {
 	config.LoadEnv()
 	config.InitSupabase()
 	config.InitDatabase()
+	config.InitStorageClient()
 
 	r := gin.Default()
 	docs.InitSwagger(r)

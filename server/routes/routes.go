@@ -9,5 +9,6 @@ func SetupRoutes(router *gin.Engine) {
 
 	AuthRoutes(api)
 	UserRoutes(api)
-	// Thêm các module khác vào đây sau này
+	ProductRoutes(api)
+	MediaRoutes(api)
 }
