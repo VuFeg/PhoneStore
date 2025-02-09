@@ -1,0 +1,53 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: API for Ecommerce platform
+  title: Ecommerce API
+  version: "1.0"
+paths:
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh access token using refresh token
+      parameters:
+      - description: Refresh token payload
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New access and refresh tokens
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid refresh token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Token generation error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh access token
+      tags:
+      - Auth
+swagger: "2.0"
