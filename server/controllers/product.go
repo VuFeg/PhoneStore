@@ -33,9 +33,9 @@ func GetProducts(c *gin.Context) {
 		return
 	}
 
-	// Lấy danh sách sản phẩm theo phân trang, preload luôn các Categories
+	// Lấy danh sách sản phẩm theo phân trang, preload luôn các Variants
 	var products []models.Product
-	if err := config.DB.Preload("Categories").Offset(offset).Limit(pageSize).Find(&products).Error; err != nil {
+	if err := config.DB.Preload("Variants").Offset(offset).Limit(pageSize).Find(&products).Error; err != nil {
 		errResp := models.NewErrorResponse(http.StatusInternalServerError, "Failed to fetch products", err.Error())
 		c.JSON(http.StatusInternalServerError, errResp)
 		return
@@ -58,8 +58,8 @@ func GetProduct(c *gin.Context) {
 	id := c.Param("id")
 	var product models.Product
 
-	// Preload các Categories của sản phẩm
-	if err := config.DB.Preload("Categories").First(&product, "id = ?", id).Error; err != nil {
+	// Preload các Variants của sản phẩm
+	if err := config.DB.Preload("Variants").First(&product, "id = ?", id).Error; err != nil {
 		errResp := models.NewErrorResponse(http.StatusNotFound, "Product not found", err.Error())
 		c.JSON(http.StatusNotFound, errResp)
 		return
@@ -126,6 +126,9 @@ func UpdateProduct(c *gin.Context) {
 	}
 	if input.ImageURL != nil {
 		product.ImageURL = *input.ImageURL
+	}
+	if input.Public != nil {
+		product.Public = *input.Public
 	}
 
 	product.UpdatedAt = time.Now()

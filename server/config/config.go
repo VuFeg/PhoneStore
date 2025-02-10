@@ -30,7 +30,7 @@ func InitDatabase() {
 	}
 	DB = db
 
-	if err := DB.AutoMigrate(&models.User{}, &models.RefreshToken{}, &models.Product{}, &models.Category{}); err != nil {
+	if err := DB.AutoMigrate(&models.User{}, &models.RefreshToken{}, &models.Product{}, &models.ProductVariant{}); err != nil {
 		log.Fatal("Migration failed:", err)
 	}
 	log.Println("Migration completed successfully!")
