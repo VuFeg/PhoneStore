@@ -12,4 +12,5 @@ func SetupRoutes(router *gin.Engine) {
 	ProductRoutes(api)
 	MediaRoutes(api)
 	CategoryRoutes(api)
+	CartRoutes(api)
 }
