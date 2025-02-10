@@ -3,19 +3,23 @@ package middleware
 import (
 	"ecommerce-project/config"
 	"ecommerce-project/utils"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
     return func(c *gin.Context) {
-        token := c.GetHeader("Authorization")
+        token := strings.Split(c.GetHeader("Authorization"), " ")[1]
         if token == "" {
             c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization required"})
             c.Abort()
             return
         }
+
+        fmt.Println(token)
 
         userID, role, err := utils.ParseToken(token, config.GetEnv("ACCESS_TOKEN_SECRET"))
         if err != nil {
