@@ -1,4 +1,4 @@
-import axios from "axios";
+import instance from "@/utils/axiosInstance";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
@@ -18,7 +18,7 @@ interface RegisterInput {
 // Function to handle user login
 export const login = async (loginData: LoginInput) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, loginData);
+    const response = await instance.post(`${API_URL}/auth/login`, loginData);
     // Save the token to local storage or cookies
     localStorage.setItem("accessToken", response.data.access_token);
     localStorage.setItem("refreshToken", response.data.refresh_token);
@@ -32,7 +32,10 @@ export const login = async (loginData: LoginInput) => {
 // Function to handle user registration
 export const register = async (registerData: RegisterInput) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/register`, registerData);
+    const response = await instance.post(
+      `${API_URL}/auth/register`,
+      registerData
+    );
     return response.data;
   } catch (error) {
     console.error("Error registering:", error);
@@ -43,17 +46,14 @@ export const register = async (registerData: RegisterInput) => {
 // Function to handle user logout
 export const logout = async () => {
   try {
-    await axios.post(
-      `${API_URL}/auth/logout`,
-      {
-        refresh_token: localStorage.getItem("refreshToken"),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }
-    );
+    const access_token = localStorage.getItem("accessToken");
+    const refresh_token = localStorage.getItem("refreshToken");
+
+    await instance.post(`${API_URL}/auth/logout`, {
+      refresh_token,
+      access_token,
+    });
+
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
   } catch (error) {
@@ -64,7 +64,7 @@ export const logout = async () => {
 
 export const checkMe = async () => {
   try {
-    const response = await axios.get(`${API_URL}/auth/me`, {
+    const response = await instance.get(`${API_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },

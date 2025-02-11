@@ -3,11 +3,11 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  imageUrl: string;
+  image_urls: string[]; // Update to match the field name
   public: boolean;
   variants: ProductVariant[];
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // Interface for a product variant
@@ -17,22 +17,22 @@ export interface ProductVariant {
   name: string;
   price: number;
   stock: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // Interface for creating a new product
 export interface CreateProductInput {
   name: string;
   description: string;
-  imageUrl: string;
+  image_urls: string[]; // Ensure this matches the expected field name
 }
 
 // Interface for updating an existing product
 export interface UpdateProductInput {
   name?: string;
   description?: string;
-  imageUrl?: string;
+  image_urls?: string[]; // Ensure this matches the expected field name
   public?: boolean;
 }
 

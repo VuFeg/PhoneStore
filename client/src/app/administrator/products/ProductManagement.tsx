@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiMenu,
   FiSearch,
@@ -11,49 +11,35 @@ import {
   FiX,
 } from "react-icons/fi";
 import { BiCategory, BiPackage, BiUser, BiCog } from "react-icons/bi";
-import SidebarItem from "./components/SidebarItem";
-import ProductModal from "./components/ProductModal";
+import SidebarItem from "../../../components/admin/SidebarItem";
 import Link from "next/link";
-
-// Mô phỏng dữ liệu (có thể thay thế bằng gọi API sau này)
-const mockProducts = [
-  {
-    id: 1,
-    name: "Premium Wireless Headphones",
-    published: true,
-    createdAt: "2024-01-15",
-    image: "image_url_1.jpg",
-  },
-  {
-    id: 2,
-    name: "Ergonomic Office Chair",
-    published: false,
-    createdAt: "2024-01-16",
-    image: "image_url_2.jpg",
-  },
-  {
-    id: 3,
-    name: "Smart Watch Pro",
-    published: true,
-    createdAt: "2024-01-17",
-    image: "image_url_3.jpg",
-  },
-];
+import { deleteProduct, fetchProducts } from "@/services/productsService";
+import { Product } from "@/types/products";
+import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<{
-    id?: number;
-    name: string;
-    published: boolean;
-    createdAt: string;
-    image?: string;
-  } | null>(null);
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -66,19 +52,27 @@ const ProductManagement = () => {
     indexOfLastItem
   );
 
-  const handleDeleteProduct = (id: number) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      setProducts(products.filter((product) => product.id !== id));
+  const handleDeleteProduct = (product: Product) => {
+    setProductToDelete(product);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (productToDelete) {
+      try {
+        await deleteProduct(productToDelete.id);
+        setProducts(
+          products.filter((product) => product.id !== productToDelete.id)
+        );
+        setIsDeleteModalOpen(false);
+        setProductToDelete(null);
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
     }
   };
 
-  const handleEditProduct = (product: {
-    id: number;
-    name: string;
-    published: boolean;
-    createdAt: string;
-    image?: string;
-  }) => {
+  const handleEditProduct = (product: Product) => {
     setCurrentProduct(product);
     setIsModalOpen(true);
   };
@@ -144,7 +138,7 @@ const ProductManagement = () => {
               </h2>
               <div className="flex items-center gap-4">
                 <Link
-                  href="/admin/products/create"
+                  href="/administrator/products/create"
                   className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
                 >
                   <FiPlus /> Add Product
@@ -191,7 +185,7 @@ const ProductManagement = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {currentItems.map((product) => (
+                  {currentItems.map((product: Product) => (
                     <tr key={product.id} className="hover:bg-secondary/5">
                       <td className="px-6 py-4">
                         <div className="font-medium text-foreground">
@@ -199,23 +193,23 @@ const ProductManagement = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {product.image && (
+                        {product.image_urls && (
                           <img
-                            src={product.image}
+                            src={product.image_urls[0]}
                             alt={product.name}
                             className="w-16 h-16 object-cover rounded-lg"
                           />
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        {product.published ? (
+                        {product.public ? (
                           <FiCheck className="text-chart-2 w-5 h-5" />
                         ) : (
                           <FiX className="text-destructive w-5 h-5" />
                         )}
                       </td>
                       <td className="px-6 py-4 text-foreground">
-                        {new Date(product.createdAt).toLocaleDateString()}
+                        {new Date(product.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
@@ -226,7 +220,7 @@ const ProductManagement = () => {
                             <FiEdit2 />
                           </button>
                           <button
-                            onClick={() => handleDeleteProduct(product.id)}
+                            onClick={() => handleDeleteProduct(product)}
                             className="p-2 text-accent hover:text-destructive rounded-lg hover:bg-secondary"
                           >
                             <FiTrash2 />
@@ -266,6 +260,14 @@ const ProductManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteProduct}
+        itemName={productToDelete?.name}
+      />
     </div>
   );
 };

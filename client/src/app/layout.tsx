@@ -13,7 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideNavbar = pathname === "/login" || pathname === "/register";
+  const hideNavbar =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname.startsWith("/administrator");
 
   return (
     <html lang="en">

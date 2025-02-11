@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { FiX, FiUpload, FiImage } from "react-icons/fi";
 import { BsToggleOff, BsToggleOn } from "react-icons/bs";
-import { createProduct } from "@/apis/products";
+import { createProduct } from "@/services/productsService";
+import { uploadImage } from "@/services/mediaService"; // Import the uploadImage function
 
 const ProductCreation = () => {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
-  const [images, setImages] = useState<Array<File & { preview: string }>>([]);
+  const [images, setImages] = useState<Array<{ file: File; url: string }>>([]);
   const [isPublished, setIsPublished] = useState(false);
   const [errors, setErrors] = useState<{
     productName?: string;
@@ -36,7 +37,7 @@ const ProductCreation = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const validFiles = acceptedFiles.filter((file) => {
       const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(
         file.type
@@ -45,14 +46,23 @@ const ProductCreation = () => {
       return isValidType && isValidSize;
     });
 
-    const newImages = validFiles.map((file) =>
-      Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      })
-    );
-
-    setImages((prev) => [...prev, ...newImages].slice(0, 3));
+    for (const file of validFiles) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await uploadImage(formData);
+        const newImage = {
+          file,
+          url: response.url,
+        };
+        setImages((prev) => [...prev, newImage].slice(0, 3));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
   }, []);
+
+  console.log("Images:", images);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -73,13 +83,15 @@ const ProductCreation = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
+        const image_urls = images.map((img) => img.url);
+
         const productData = {
           name: productName,
           description,
-          imageUrl: images[0].preview, // Assuming the first image is the main image
+          image_urls, // Use the uploaded image URLs
+          isPublished,
         };
-        const newProduct = await createProduct(productData);
-        console.log("Product created successfully:", newProduct);
+        await createProduct(productData);
         // Reset form after successful creation
         setProductName("");
         setDescription("");
@@ -93,7 +105,7 @@ const ProductCreation = () => {
   };
 
   useEffect(() => {
-    return () => images.forEach((image) => URL.revokeObjectURL(image.preview));
+    return () => images.forEach((image) => URL.revokeObjectURL(image.url));
   }, [images]);
 
   return (
@@ -157,13 +169,13 @@ const ProductCreation = () => {
             )}
 
             <div className="grid grid-cols-3 gap-4 mt-4">
-              {images.map((file, index) => (
+              {images.map((img, index) => (
                 <div key={index} className="relative">
                   <img
-                    src={file.preview}
+                    src={img.url}
                     alt={`Preview ${index + 1}`}
                     className="w-full h-40 object-cover rounded-md"
-                    onClick={() => setPreviewImage(file.preview)}
+                    onClick={() => setPreviewImage(img.url)}
                   />
                   <button
                     type="button"
