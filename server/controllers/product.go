@@ -68,7 +68,6 @@ func GetProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, product)
 }
 
-
 func CreateProduct(c *gin.Context) {
 	var input models.CreateProductInput
 
@@ -79,12 +78,12 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	// Tạo đối tượng product
+	// Tạo đối tượng product với mảng ảnh
 	product := models.Product{
 		ID:          uuid.New(),
 		Name:        input.Name,
 		Description: input.Description,
-		ImageURL:    input.ImageURL,
+		ImageURLs:   input.ImageURLs,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -110,8 +109,7 @@ func UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	var input models.UpdateProductInput  // Cập nhật kiểu input cho phù hợp
-
+	var input models.UpdateProductInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		errResp := models.NewErrorResponse(http.StatusBadRequest, "Invalid request payload", err.Error())
 		c.JSON(http.StatusBadRequest, errResp)
@@ -124,8 +122,9 @@ func UpdateProduct(c *gin.Context) {
 	if input.Description != nil {
 		product.Description = *input.Description
 	}
-	if input.ImageURL != nil {
-		product.ImageURL = *input.ImageURL
+	// Cập nhật mảng ảnh nếu có
+	if input.ImageURLs != nil {
+		product.ImageURLs = *input.ImageURLs
 	}
 	if input.Public != nil {
 		product.Public = *input.Public

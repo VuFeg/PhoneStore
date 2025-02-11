@@ -11,10 +11,9 @@ type Product struct {
 	ID          uuid.UUID         `gorm:"type:uuid;primary_key" json:"id"`
 	Name        string            `gorm:"size:200;not null" json:"name"`
 	Description string            `json:"description"`
-	ImageURL    string            `json:"image_url"`
-	// Trường Public để xác định sản phẩm có được hiển thị hay không
+	// ImageURLs lưu danh sách URL hình ảnh (được lưu dưới dạng JSON trong database)
+	ImageURLs   []string         `gorm:"type:json;serializer:json" json:"image_urls"`
 	Public      bool              `gorm:"default:true" json:"public"`
-	// Một sản phẩm có thể có nhiều variant (phiên bản)
 	Variants    []ProductVariant  `gorm:"foreignKey:ProductID;references:ID" json:"variants"`
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
@@ -22,15 +21,16 @@ type Product struct {
 
 // CreateProductInput chỉ chứa các trường thông tin chung của sản phẩm
 type CreateProductInput struct {
-	Name        string `json:"name" binding:"required"`
-	Description string `json:"description"`
-	ImageURL    string `json:"image_url" binding:"omitempty,url"`
+    Name        string   `json:"name" binding:"required"`
+    Description string   `json:"description"`
+    // Bắt buộc phải có mảng URL, mỗi URL hợp lệ
+    ImageURLs   []string `json:"image_urls" binding:"required,dive,url"`
 }
 
 // UpdateProductInput chỉ cho phép cập nhật thông tin chung của sản phẩm
 type UpdateProductInput struct {
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
-	ImageURL    *string `json:"image_url"`
-	Public      *bool   `json:"public"`
+    Name        *string   `json:"name"`
+    Description *string   `json:"description"`
+    ImageURLs   *[]string `json:"image_urls"`
+    Public      *bool     `json:"public"`
 }

@@ -37,6 +37,16 @@ func GenerateTokens(user models.User) (string, string, error) {
     return accessTokenString, refreshTokenString, nil
 }
 
+// GenerateAccessToken generates a new access token for the given user.
+func GenerateAccessToken(user models.User) (string, error) {
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub":  user.ID.String(),
+		"role": user.Role,
+		"exp":  time.Now().Add(60 * time.Minute).Unix(),
+	})
+	return accessToken.SignedString([]byte(config.GetEnv("ACCESS_TOKEN_SECRET")))
+}
+
 func ParseToken(tokenString string, secretKey string) (uuid.UUID, string, error) {
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         return []byte(secretKey), nil
