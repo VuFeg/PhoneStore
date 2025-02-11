@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +19,15 @@ func main() {
 	config.InitStorageClient()
 
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://localhost:3000"}, // Replace with your client URL
+        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+    }))
+	
 	docs.InitSwagger(r)
 	routes.SetupRoutes(r)
 

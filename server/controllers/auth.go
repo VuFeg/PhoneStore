@@ -4,6 +4,7 @@ import (
 	"ecommerce-project/config"
 	"ecommerce-project/models"
 	"ecommerce-project/utils"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -123,27 +124,40 @@ func Login(c *gin.Context) {
 
 // Logout
 func Logout(c *gin.Context) {
-	type Request struct {
-		AccessToken  string `json:"access_token" validate:"required"`
-		RefreshToken string `json:"refresh_token" validate:"required"`
+	// Định nghĩa request body
+	type LogoutRequest struct {
+		RefreshToken string `json:"refresh_token" binding:"required"`
+	}
+	var req LogoutRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
 	}
 
-	var req Request
-	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.HandleValidationError(c, err)
+	// Lấy userID từ context, chuyển sang string
+	uid, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	userID := fmt.Sprintf("%v", uid)
+
+	// Lấy refresh token từ database
+	var tokenRecord models.RefreshToken
+	if err := config.DB.Where("token = ?", req.RefreshToken).First(&tokenRecord).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
+		return
+	}
+
+	// Kiểm tra xem refresh token có thuộc về user hiện tại không
+	if tokenRecord.UserID.String() != userID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token mismatch"})
 		return
 	}
 
 	// Xóa refresh token khỏi database
 	if err := config.DB.Where("token = ?", req.RefreshToken).Delete(&models.RefreshToken{}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete refresh token"})
-		return
-	}
-
-	// Logout from Supabase
-	err := config.Supabase.Auth.SignOut(c.Request.Context(), req.AccessToken)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout from Supabase"})
 		return
 	}
 
@@ -178,5 +192,21 @@ func Refresh(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"access_token":  session.AccessToken,
 		"refresh_token": session.RefreshToken,
+	})
+}
+
+func CheckMe(c *gin.Context) {
+	// Lấy thông tin userID đã được set trong middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	role, _ := c.Get("role") // Nếu cần thiết, lấy thêm thông tin role
+
+	c.JSON(http.StatusOK, gin.H{
+		"userID": userID,
+		"role":   role,
 	})
 }
