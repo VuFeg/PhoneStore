@@ -58,7 +58,6 @@ func CreateVariantForProduct(c *gin.Context) {
 		Stock:      input.Stock,
 		Default:    input.Default,
 		Active:     input.Active,
-		ImageURL:   input.ImageURL,  // Lưu ảnh variant
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
@@ -128,10 +127,6 @@ func UpdateVariant(c *gin.Context) {
 	}
 	if input.Active != nil {
 		variant.Active = *input.Active
-	}
-	// Cập nhật trường ImageURL nếu có trong input
-	if input.ImageURL != nil {
-		variant.ImageURL = *input.ImageURL
 	}
 
 	variant.UpdatedAt = time.Now()
