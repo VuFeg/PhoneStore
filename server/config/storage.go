@@ -32,6 +32,7 @@ func InitStorageClient() {
 
 type Storage interface {
     UploadFile(file *multipart.FileHeader) (string, error)
+    DeleteFile(filename string) error
 }
 
 type SupabaseStorage struct {
@@ -63,6 +64,31 @@ func newSupabaseStorage() (Storage, error) {
     }, nil
 }
 
+func (s *SupabaseStorage) DeleteFile(filename string) error {
+	// Xây dựng URL cho việc xóa file
+	url := fmt.Sprintf("%s/storage/v1/object/%s/%s", s.url, s.bucket, filename)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// Thiết lập header Authorization bằng Supabase Service Key
+	req.Header.Set("Authorization", "Bearer "+os.Getenv("SUPABASE_SERVICE_KEY"))
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Kiểm tra status code: chấp nhận các mã 2xx
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("delete failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
 
 func (s *SupabaseStorage) UploadFile(file *multipart.FileHeader) (string, error) {
     fileContent, err := s.readFile(file)

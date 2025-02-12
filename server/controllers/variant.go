@@ -12,7 +12,7 @@ import (
 
 // CreateVariantForProduct tạo một variant (phiên bản) cho sản phẩm
 func CreateVariantForProduct(c *gin.Context) {
-	// Lấy product id từ URL (sử dụng tham số :id)
+	// Lấy product id từ URL (tham số :id)
 	productIDParam := c.Param("id")
 	productID, err := uuid.Parse(productIDParam)
 	if err != nil {
@@ -29,9 +29,8 @@ func CreateVariantForProduct(c *gin.Context) {
 		return
 	}
 
-	// Nhận dữ liệu từ request: bao gồm các thuộc tính variant như color, capacity, price, stock, default và active
+	// Nhận dữ liệu JSON từ request cho variant
 	var input models.CreateVariantInput
-
 	if err := c.ShouldBindJSON(&input); err != nil {
 		errResp := models.NewErrorResponse(http.StatusBadRequest, "Invalid request payload", err.Error())
 		c.JSON(http.StatusBadRequest, errResp)
@@ -49,7 +48,7 @@ func CreateVariantForProduct(c *gin.Context) {
 		}
 	}
 
-	// Tạo variant mới
+	// Tạo variant mới, bao gồm trường ImageURL
 	variant := models.ProductVariant{
 		ID:         uuid.New(),
 		ProductID:  productID,
@@ -59,6 +58,7 @@ func CreateVariantForProduct(c *gin.Context) {
 		Stock:      input.Stock,
 		Default:    input.Default,
 		Active:     input.Active,
+		ImageURL:   input.ImageURL,  // Lưu ảnh variant
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
@@ -71,6 +71,7 @@ func CreateVariantForProduct(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, variant)
 }
+
 
 // UpdateVariant cập nhật thông tin của một variant
 func UpdateVariant(c *gin.Context) {
@@ -93,7 +94,6 @@ func UpdateVariant(c *gin.Context) {
 
 	// Nhận dữ liệu cập nhật từ request
 	var input models.UpdateVariantInput
-
 	if err := c.ShouldBindJSON(&input); err != nil {
 		errResp := models.NewErrorResponse(http.StatusBadRequest, "Invalid request payload", err.Error())
 		c.JSON(http.StatusBadRequest, errResp)
@@ -129,6 +129,10 @@ func UpdateVariant(c *gin.Context) {
 	if input.Active != nil {
 		variant.Active = *input.Active
 	}
+	// Cập nhật trường ImageURL nếu có trong input
+	if input.ImageURL != nil {
+		variant.ImageURL = *input.ImageURL
+	}
 
 	variant.UpdatedAt = time.Now()
 
@@ -140,6 +144,7 @@ func UpdateVariant(c *gin.Context) {
 
 	c.JSON(http.StatusOK, variant)
 }
+
 
 // GetVariantsForProduct lấy danh sách tất cả variant của một sản phẩm
 func GetVariantsForProduct(c *gin.Context) {
