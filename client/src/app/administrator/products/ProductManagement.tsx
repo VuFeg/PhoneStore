@@ -13,16 +13,16 @@ import {
 import { BiCategory, BiPackage, BiUser, BiCog } from "react-icons/bi";
 import SidebarItem from "../../../components/admin/SidebarItem";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import useRouter từ next/navigation
 import { deleteProduct, fetchProducts } from "@/services/productsService";
 import { Product } from "@/types/products";
 import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
 
 const ProductManagement = () => {
+  const router = useRouter(); // Khởi tạo router
   const [products, setProducts] = useState<Product[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -72,9 +72,9 @@ const ProductManagement = () => {
     }
   };
 
+  // Hàm handleEditProduct sử dụng router.push để chuyển hướng đến trang edit
   const handleEditProduct = (product: Product) => {
-    setCurrentProduct(product);
-    setIsModalOpen(true);
+    router.push(`/administrator/products/edit/${product.id}`);
   };
 
   return (
@@ -193,13 +193,14 @@ const ProductManagement = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {product.image_urls && (
-                          <img
-                            src={product.image_urls[0]}
-                            alt={product.name}
-                            className="w-16 h-16 object-cover rounded-lg"
-                          />
-                        )}
+                        {product.image_urls &&
+                          product.image_urls.length > 0 && (
+                            <img
+                              src={product.image_urls[0]}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                          )}
                       </td>
                       <td className="px-6 py-4">
                         {product.public ? (

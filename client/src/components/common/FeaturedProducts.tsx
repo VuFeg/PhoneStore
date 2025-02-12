@@ -3,9 +3,24 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { fetchProducts } from "@/services/productsService";
+import { Product } from "@/types/products";
 
 const FeaturedProducts = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   return (
     <section className="py-16">
@@ -14,13 +29,13 @@ const FeaturedProducts = () => {
           Featured Products
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product: any) => (
+          {products.map((product) => (
             <div
               key={product.id}
               className="bg-card rounded-lg shadow-sm overflow-hidden"
             >
               <Image
-                src={product.image_url}
+                src={product.image_urls[0]}
                 alt={product.name}
                 width={500}
                 height={300}
@@ -31,7 +46,7 @@ const FeaturedProducts = () => {
                   {product.name}
                 </h3>
                 <p className="text-accent mt-1">
-                  Starting from ${product.price || "N/A"}
+                  Starting from ${product.variants[0]?.price || "N/A"}
                 </p>
                 <Link
                   href={`/products/${product.id}`}

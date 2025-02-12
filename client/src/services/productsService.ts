@@ -71,7 +71,7 @@ export const updateProduct = async (
 ): Promise<Product> => {
   try {
     const response = await instance.put(
-      `${API_URL}/products/${id}`,
+      `${API_URL}/admin/products/${id}`,
       productData
     );
     return response.data;
