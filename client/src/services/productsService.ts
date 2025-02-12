@@ -2,7 +2,7 @@ import {
   Product,
   CreateProductInput,
   UpdateProductInput,
-} from "../types/products";
+} from "../types/products.type";
 import instance from "@/utils/axiosInstance";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";

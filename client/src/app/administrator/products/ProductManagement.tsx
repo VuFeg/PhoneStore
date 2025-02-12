@@ -9,19 +9,20 @@ import {
   FiTrash2,
   FiCheck,
   FiX,
+  FiPlusCircle,
 } from "react-icons/fi";
 import { BiCategory, BiPackage, BiUser, BiCog } from "react-icons/bi";
 import SidebarItem from "../../../components/admin/SidebarItem";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Import useRouter từ next/navigation
 import { deleteProduct, fetchProducts } from "@/services/productsService";
-import { Product } from "@/types/products";
+import { Product } from "@/types/products.type";
 import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
 
 const ProductManagement = () => {
   const router = useRouter(); // Khởi tạo router
   const [products, setProducts] = useState<Product[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -75,6 +76,10 @@ const ProductManagement = () => {
   // Hàm handleEditProduct sử dụng router.push để chuyển hướng đến trang edit
   const handleEditProduct = (product: Product) => {
     router.push(`/administrator/products/edit/${product.id}`);
+  };
+
+  const handleAddVariantProduct = (product: Product) => {
+    router.push(`/administrator/products/variant/${product.id}`);
   };
 
   return (
@@ -219,6 +224,12 @@ const ProductManagement = () => {
                             className="p-2 text-accent hover:text-primary rounded-lg hover:bg-secondary"
                           >
                             <FiEdit2 />
+                          </button>
+                          <button
+                            onClick={() => handleAddVariantProduct(product)}
+                            className="p-2 text-accent hover:text-green-400 rounded-lg hover:bg-secondary"
+                          >
+                            <FiPlusCircle />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(product)}

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { fetchProducts } from "@/services/productsService";
-import { Product } from "@/types/products";
+import { Product } from "@/types/products.type";
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);

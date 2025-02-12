@@ -14,11 +14,15 @@ export interface Product {
 export interface ProductVariant {
   id: string;
   productId: string;
-  name: string;
+  color: string;
+  capacity: string;
   price: number;
   stock: number;
-  created_at: string;
-  updated_at: string;
+  default: boolean;
+  active: boolean;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Interface for creating a new product
