@@ -142,12 +142,21 @@ func UpdateProduct(c *gin.Context) {
 }
 
 func DeleteProduct(c *gin.Context) {
-	id := c.Param("id")
-	if err := config.DB.Delete(&models.Product{}, "id = ?", id).Error; err != nil {
-		errResp := models.NewErrorResponse(http.StatusInternalServerError, "Failed to delete product", err.Error())
-		c.JSON(http.StatusInternalServerError, errResp)
-		return
-	}
+    id := c.Param("id")
 
-	c.JSON(http.StatusOK, gin.H{"message": "Product deleted successfully"})
+    // Delete all variants associated with the product
+    if err := config.DB.Where("product_id = ?", id).Delete(&models.ProductVariant{}).Error; err != nil {
+        errResp := models.NewErrorResponse(http.StatusInternalServerError, "Failed to delete product variants", err.Error())
+        c.JSON(http.StatusInternalServerError, errResp)
+        return
+    }
+
+    // Delete the product
+    if err := config.DB.Delete(&models.Product{}, "id = ?", id).Error; err != nil {
+        errResp := models.NewErrorResponse(http.StatusInternalServerError, "Failed to delete product", err.Error())
+        c.JSON(http.StatusInternalServerError, errResp)
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Product and its variants deleted successfully"})
 }
