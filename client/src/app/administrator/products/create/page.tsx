@@ -1,5 +1,10 @@
+import AdminProtectedRoute from "@/components/admin/AdminProtectedRoute";
 import ProductCreation from "./ProductCreation";
 
 export default function Page() {
-  return <ProductCreation />;
+  return (
+    <AdminProtectedRoute>
+      <ProductCreation />
+    </AdminProtectedRoute>
+  );
 }

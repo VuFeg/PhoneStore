@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FiEdit2, FiTrash2, FiPlus, FiSearch } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiArrowLeftCircle, FiSearch } from "react-icons/fi";
 import { BiDollar } from "react-icons/bi";
 import { CreateVariantInput, Variant } from "@/types/variants.type";
 import { useParams } from "next/navigation";
 import { fetchProductById } from "@/services/productsService";
 import { createVariantForProduct } from "@/services/variantsService";
+import { useRouter } from "next/navigation";
 
 const ProductVariantManagement = () => {
   const { productId } = useParams();
+  const router = useRouter();
   const [variants, setVariants] = useState<Variant[]>([]);
 
   const [formData, setFormData] = useState<CreateVariantInput>({
@@ -107,6 +109,10 @@ const ProductVariantManagement = () => {
     // setFormData(variant);
   };
 
+  const handleBack = () => {
+    router.push("/administrator/products");
+  };
+
   const filteredVariants = variants.filter(
     (variant) =>
       variant.capacity.toLowerCase().includes(search.toLowerCase()) ||
@@ -123,9 +129,17 @@ const ProductVariantManagement = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-heading font-heading text-foreground mb-8">
-          Product Variant Management
-        </h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-heading font-heading text-foreground mb-8">
+            Product Variant Management
+          </h1>
+          <button
+            onClick={() => handleBack()}
+            className="p-1 text-2xl hover:text-destructive"
+          >
+            <FiArrowLeftCircle />
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">

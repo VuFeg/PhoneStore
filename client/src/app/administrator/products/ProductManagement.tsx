@@ -85,55 +85,6 @@ const ProductManagement = () => {
   return (
     <div className="min-h-screen">
       <div className="flex h-screen bg-background">
-        {/* Sidebar */}
-        <div
-          className={`transition-all duration-300 p-4 border-r border-border ${
-            sidebarOpen ? "w-64" : "w-20"
-          } bg-card`}
-        >
-          <div className="flex items-center justify-between mb-8">
-            <h1
-              className={`${
-                sidebarOpen ? "block" : "hidden"
-              } text-xl font-bold text-foreground`}
-            >
-              Admin Panel
-            </h1>
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg hover:bg-secondary"
-            >
-              <FiMenu className="text-foreground" />
-            </button>
-          </div>
-          <nav>
-            <SidebarItem
-              icon={<BiPackage />}
-              text="Products"
-              active={true}
-              expanded={sidebarOpen}
-            />
-            <SidebarItem
-              icon={<BiCategory />}
-              text="Categories"
-              active={false}
-              expanded={sidebarOpen}
-            />
-            <SidebarItem
-              icon={<BiUser />}
-              text="Customers"
-              active={false}
-              expanded={sidebarOpen}
-            />
-            <SidebarItem
-              icon={<BiCog />}
-              text="Settings"
-              active={false}
-              expanded={sidebarOpen}
-            />
-          </nav>
-        </div>
-
         {/* Main Content */}
         <div className="flex-1 overflow-auto">
           <div className="p-6">
@@ -193,7 +144,7 @@ const ProductManagement = () => {
                   {currentItems.map((product: Product) => (
                     <tr key={product.id} className="hover:bg-secondary/5">
                       <td className="px-6 py-4">
-                        <div className="font-medium text-foreground">
+                        <div className="font-medium text-foreground uppercase">
                           {product.name}
                         </div>
                       </td>

@@ -65,8 +65,11 @@ const ConfirmDeleteModal = memo<ConfirmDeleteModalProps>(
               Confirm Deletion
             </h2>
             <p className="text-center text-body text-accent">
-              Are you sure you want to delete {itemName}? This action cannot be
-              undone.
+              Are you sure you want to delete{" "}
+              <span className="text-destructive font-bold uppercase">
+                {itemName}
+              </span>
+              ? This action cannot be undone.
             </p>
           </div>
 

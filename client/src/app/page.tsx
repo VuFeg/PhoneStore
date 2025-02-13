@@ -6,11 +6,11 @@ import Slider from "@/components/common/Slider";
 
 const HomePage = () => {
   return (
-    <div>
+    <>
       <Slider />
       <FeaturedProducts />
       <Footer />
-    </div>
+    </>
   );
 };
 

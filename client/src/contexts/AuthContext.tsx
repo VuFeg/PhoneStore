@@ -10,9 +10,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 // Định nghĩa các interface cho dữ liệu user, nếu server trả về dữ liệu như sau
 interface User {
-  id: string;
-  username?: string;
-  email: string;
+  userID: string;
+  role: string;
   // Thêm các trường khác nếu cần
 }
 
