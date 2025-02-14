@@ -7,9 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CategoryRoutes định nghĩa các routes cho phiên bản (Category) của sản phẩm
-func CategoryRoutes(r *gin.RouterGroup) {
-	// --- Các route public cho Category ---
+func VariantRoutes(r *gin.RouterGroup) {
 	// Lấy chi tiết một Category theo id
 	r.GET("/variants/:id", controllers.GetVariantByID)
 	// Lấy danh sách các Category của một sản phẩm cụ thể

@@ -5,12 +5,15 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine) {
-	api := router.Group("/")
+	api := router.Group("/api")
+	{
+		AuthRoutes(api)
+		UserRoutes(api)
+		ProductRoutes(api)
+		MediaRoutes(api)
+		CategoryProductRoutes(api)
+		CartRoutes(api)
+		VariantRoutes(api)
+	}
 
-	AuthRoutes(api)
-	UserRoutes(api)
-	ProductRoutes(api)
-	MediaRoutes(api)
-	CategoryRoutes(api)
-	CartRoutes(api)
 }
