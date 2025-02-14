@@ -11,18 +11,16 @@ import {
   FiX,
   FiPlusCircle,
 } from "react-icons/fi";
-import { BiCategory, BiPackage, BiUser, BiCog } from "react-icons/bi";
-import SidebarItem from "../../../components/admin/SidebarItem";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Import useRouter từ next/navigation
 import { deleteProduct, fetchProducts } from "@/services/productsService";
 import { Product } from "@/types/products.type";
 import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
+import axios from "axios";
 
 const ProductManagement = () => {
   const router = useRouter(); // Khởi tạo router
   const [products, setProducts] = useState<Product[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;

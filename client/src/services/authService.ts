@@ -64,7 +64,7 @@ export const logout = async () => {
 
 export const checkMe = async () => {
   try {
-    const response = await instance.get(`${API_URL}/auth/me`, {
+    const response = await instance.get(`/auth/me`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },

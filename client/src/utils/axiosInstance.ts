@@ -10,7 +10,10 @@ import { toast } from "react-toastify";
 
 // Khởi tạo Axios instance với base URL
 const instance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Request Interceptor: tự động thêm header Authorization nếu có accessToken trong localStorage

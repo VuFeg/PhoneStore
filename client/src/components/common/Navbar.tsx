@@ -167,63 +167,65 @@ const Navbar = () => {
               />
               <FiSearch className="absolute right-3 top-2.5 text-accent" />
             </div>
-            <button
-              ref={userIconRef}
-              onClick={handleDropdownToggle}
-              className="text-foreground hover:text-primary transition-colors duration-200"
-            >
-              <FiUser className="h-6 w-6" />
-            </button>
-            {isDropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="absolute right-16 top-12 mt-2 w-48 rounded-md shadow-lg py-1 bg-card ring-1 ring-black ring-opacity-5 z-10"
+            <div className="relative">
+              <button
+                ref={userIconRef}
+                onClick={handleDropdownToggle}
+                className="text-foreground hover:text-primary transition-colors duration-200"
               >
-                {user ? (
-                  <>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
-                    >
-                      Profile Settings
-                    </Link>
-                    <Link
-                      href="/orders"
-                      className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
-                    >
-                      My Orders
-                    </Link>
-                    <Link
-                      href="/account"
-                      className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
-                    >
-                      Account Management
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-secondary"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={handleLogin}
-                      className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-secondary"
-                    >
-                      Login
-                    </button>
-                    <Link
-                      href="/register"
-                      className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
-                    >
-                      Register
-                    </Link>
-                  </>
-                )}
-              </div>
-            )}
+                <FiUser className="h-6 w-6" />
+              </button>
+              {isDropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 top-8 mt-2 w-48 rounded-md shadow-lg py-1 bg-card ring-1 ring-black ring-opacity-5 z-10"
+                >
+                  {user ? (
+                    <>
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                      >
+                        Profile Settings
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                      >
+                        My Orders
+                      </Link>
+                      <Link
+                        href="/account"
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                      >
+                        Account Management
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-secondary"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleLogin}
+                        className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                      >
+                        Login
+                      </button>
+                      <Link
+                        href="/register"
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-secondary"
+                      >
+                        Register
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             <button className="relative text-foreground hover:text-primary transition-colors duration-200">
               <FiShoppingCart className="h-6 w-6" />
               {cartCount > 0 && (

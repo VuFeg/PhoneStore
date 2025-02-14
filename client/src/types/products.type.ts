@@ -3,9 +3,11 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  image_urls: string[]; // Update to match the field name
+  image_urls: string[]; // Ensure this matches the expected field name
   public: boolean;
   variants: ProductVariant[];
+  category_id: string; // Add category_id field
+  category: Category; // Add category field
   created_at: string;
   updated_at: string;
 }
@@ -25,11 +27,20 @@ export interface ProductVariant {
   updatedAt: string;
 }
 
+// Interface for a category
+export interface Category {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Interface for creating a new product
 export interface CreateProductInput {
   name: string;
   description: string;
   image_urls: string[]; // Ensure this matches the expected field name
+  category_id: string; // Add category_id field
 }
 
 // Interface for updating an existing product
@@ -38,6 +49,7 @@ export interface UpdateProductInput {
   description?: string;
   image_urls?: string[]; // Ensure this matches the expected field name
   public?: boolean;
+  category_id?: string; // Add category_id field
 }
 
 // Interface for creating a new product variant

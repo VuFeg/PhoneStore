@@ -5,25 +5,45 @@ import { useDropzone } from "react-dropzone";
 import { FiX, FiUpload, FiImage } from "react-icons/fi";
 import { BsToggleOff, BsToggleOn } from "react-icons/bs";
 import { createProduct } from "@/services/productsService";
-import { uploadImage } from "@/services/mediaService"; // Import the uploadImage function
+import { uploadImage } from "@/services/mediaService";
+import { fetchCategories } from "@/services/categoryService";
+import { Category } from "@/types/products.type";
+import { toast } from "react-toastify";
 
 const ProductCreation = () => {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<Array<{ file: File; url: string }>>([]);
   const [isPublished, setIsPublished] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [errors, setErrors] = useState<{
     productName?: string;
     description?: string;
     images?: string;
+    category?: string;
   }>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const validateForm = () => {
     const newErrors: {
       productName?: string;
       description?: string;
       images?: string;
+      category?: string;
     } = {};
     if (!productName) newErrors.productName = "Product name is required";
     if (productName.length > 100)
@@ -33,6 +53,7 @@ const ProductCreation = () => {
     if (description.length > 500)
       newErrors.description = "Description cannot exceed 500 characters";
     if (images.length < 3) newErrors.images = "Please upload at least 3 images";
+    if (!selectedCategory) newErrors.category = "Please select a category";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -62,8 +83,6 @@ const ProductCreation = () => {
     }
   }, []);
 
-  console.log("Images:", images);
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -88,15 +107,21 @@ const ProductCreation = () => {
         const productData = {
           name: productName,
           description,
-          image_urls, // Use the uploaded image URLs
-          isPublished,
+          image_urls,
+          category_id: selectedCategory,
+          public: isPublished,
         };
         await createProduct(productData);
+        toast.success("Product created successfully", {
+          position: "top-right",
+          autoClose: 3000,
+        });
         // Reset form after successful creation
         setProductName("");
         setDescription("");
         setImages([]);
         setIsPublished(false);
+        setSelectedCategory("");
         setErrors({});
       } catch (error) {
         console.error("Error creating product:", error);
@@ -116,6 +141,25 @@ const ProductCreation = () => {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Category product */}
+          <div>
+            <label className="block text-sm font-body mb-2">Category *</label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full p-2 text-foreground border rounded-md"
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="text-destructive mt-1 text-sm">{errors.category}</p>
+            )}
+          </div>
           {/* Product Name */}
           <div>
             <label
