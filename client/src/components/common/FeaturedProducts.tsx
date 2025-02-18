@@ -23,25 +23,27 @@ const FeaturedProducts = () => {
   }, []);
 
   return (
-    <section className="py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="container mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-foreground mb-8">
           Featured Products
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-card rounded-lg shadow-sm overflow-hidden"
-            >
-              <Image
-                src={product.image_urls[0]}
-                alt={product.name}
-                width={500}
-                height={300}
-                className="object-cover"
-              />
-              <div className="p-4">
+          {products
+            .filter((product) => product.public)
+            .map((product) => (
+              <div
+                key={product.id}
+                className="bg-card rounded-lg shadow-sm overflow-hidden"
+              >
+                <Image
+                  src={product.image_urls[0]}
+                  alt={product.name}
+                  width={500}
+                  height={300}
+                  className="object-cover"
+                />
+                <div className="p-4"></div>
                 <h3 className="text-lg font-semibold text-foreground">
                   {product.name}
                 </h3>
@@ -55,8 +57,7 @@ const FeaturedProducts = () => {
                   Add to Cart
                 </Link>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </section>

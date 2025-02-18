@@ -35,7 +35,7 @@ instance.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
     return response;
   },
-  async (error: AxiosError): Promise<any> => {
+  async (error: AxiosError): Promise<AxiosResponse | void> => {
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
     };

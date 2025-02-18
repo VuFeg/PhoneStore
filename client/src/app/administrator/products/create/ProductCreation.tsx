@@ -9,6 +9,7 @@ import { uploadImage } from "@/services/mediaService";
 import { fetchCategories } from "@/services/categoryService";
 import { Category } from "@/types/products.type";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 const ProductCreation = () => {
   const [productName, setProductName] = useState("");
@@ -215,9 +216,11 @@ const ProductCreation = () => {
             <div className="grid grid-cols-3 gap-4 mt-4">
               {images.map((img, index) => (
                 <div key={index} className="relative">
-                  <img
+                  <Image
                     src={img.url}
                     alt={`Preview ${index + 1}`}
+                    width={200}
+                    height={200}
                     className="w-full h-40 object-cover rounded-md"
                     onClick={() => setPreviewImage(img.url)}
                   />
@@ -293,9 +296,11 @@ const ProductCreation = () => {
         {previewImage && (
           <div className="fixed inset-0 bg-background/80 flex items-center justify-center p-4 z-50">
             <div className="relative max-w-2xl w-full">
-              <img
+              <Image
                 src={previewImage}
                 alt="Preview"
+                width={800}
+                height={800}
                 className="w-full h-auto rounded-lg"
               />
               <button

@@ -4,13 +4,16 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { FiX, FiUpload, FiImage } from "react-icons/fi";
 import { BsToggleOff, BsToggleOn } from "react-icons/bs";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { fetchProductById, updateProduct } from "@/services/productsService";
 import { uploadImage, deleteImage } from "@/services/mediaService";
+import Image from "next/image";
+import { toast } from "react-toastify";
 
 const ProductUpdate = () => {
   // Lấy productId từ URL động
   const { productId } = useParams();
+  const router = useRouter();
 
   // State cho form update sản phẩm
   const [productName, setProductName] = useState("");
@@ -125,7 +128,11 @@ const ProductUpdate = () => {
         };
         if (typeof productId === "string") {
           await updateProduct(productId, updatedProduct);
-          console.log("Product updated successfully");
+          toast.success("Product updated successfully", {
+            position: "top-center",
+            autoClose: 3000,
+          });
+          router.push("/administrator/products");
         } else {
           console.error("Invalid productId:", productId);
         }
@@ -208,10 +215,12 @@ const ProductUpdate = () => {
             <div className="grid grid-cols-3 gap-4 mt-4">
               {images.map((img, index) => (
                 <div key={index} className="relative">
-                  <img
-                    src={img.preview}
+                  <Image
+                    src={img.preview || ""}
                     alt={`Preview ${index + 1}`}
-                    className="w-full h-40 object-cover rounded-md cursor-pointer"
+                    width={500}
+                    height={300}
+                    className="w-full h-72 object-cover rounded-md cursor-pointer"
                     onClick={() => setPreviewImage(img.preview!)}
                   />
                   <button
@@ -287,9 +296,11 @@ const ProductUpdate = () => {
         {previewImage && (
           <div className="fixed inset-0 bg-background/80 flex items-center justify-center p-4 z-50">
             <div className="relative max-w-2xl w-full">
-              <img
+              <Image
                 src={previewImage}
                 alt="Preview"
+                width={800}
+                height={500}
                 className="w-full h-auto rounded-lg"
               />
               <button

@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer className="bg-card shadow-sm border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center">
               <FiPhone className="h-6 w-6 text-primary" />
@@ -96,24 +96,6 @@ const Footer = () => {
                 </Link>
               </li>
             </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">
-              Connect With Us
-            </h3>
-            <p className="text-accent text-sm mb-4">
-              Subscribe to our newsletter for updates and exclusive offers!
-            </p>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-l-md bg-secondary text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button className="bg-primary text-white px-4 py-2 rounded-r-md hover:bg-primary/90 transition-colors duration-200">
-                Subscribe
-              </button>
-            </div>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border">

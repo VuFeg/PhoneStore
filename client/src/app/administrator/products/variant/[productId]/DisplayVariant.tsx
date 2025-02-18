@@ -3,22 +3,36 @@
 import React, { useState, useEffect } from "react";
 import { FiEdit2, FiTrash2, FiArrowLeftCircle, FiSearch } from "react-icons/fi";
 import { BiDollar } from "react-icons/bi";
-import { CreateVariantInput, Variant } from "@/types/variants.type";
+import { Variant } from "@/types/variants.type";
 import { useParams } from "next/navigation";
 import { fetchProductById } from "@/services/productsService";
-import { createVariantForProduct } from "@/services/variantsService";
+import {
+  createVariantForProduct,
+  deleteVariant,
+} from "@/services/variantsService";
 import { useRouter } from "next/navigation";
+import { Product } from "@/types/products.type";
+
+interface FormState {
+  color: string;
+  capacity: string;
+  price: string;
+  stock: string;
+  active: boolean;
+  default: boolean;
+}
 
 const ProductVariantManagement = () => {
   const { productId } = useParams();
   const router = useRouter();
   const [variants, setVariants] = useState<Variant[]>([]);
+  const [product, setProduct] = useState<Product | null>(null);
 
-  const [formData, setFormData] = useState<CreateVariantInput>({
+  const [formData, setFormData] = useState<FormState>({
     color: "",
     capacity: "",
-    price: 0,
-    stock: 0,
+    price: "",
+    stock: "",
     active: true,
     default: false,
   });
@@ -40,6 +54,7 @@ const ProductVariantManagement = () => {
       if (typeof productId === "string") {
         try {
           const product = await fetchProductById(productId);
+          setProduct(product);
           setVariants(product.variants);
         } catch (error) {
           console.error("Error fetching product variants:", error);
@@ -56,9 +71,9 @@ const ProductVariantManagement = () => {
     const newErrors: FormErrors = {};
     if (!formData.color) newErrors.color = "Color is required";
     if (!formData.capacity) newErrors.capacity = "Capacity is required";
-    if (!formData.price || formData.price <= 0)
+    if (!formData.price || parseFloat(formData.price) <= 0)
       newErrors.price = "Valid price is required";
-    if (!formData.stock || formData.stock < 0)
+    if (!formData.stock || parseFloat(formData.stock) < 0)
       newErrors.stock = "Valid stock is required";
     return newErrors;
   };
@@ -71,8 +86,8 @@ const ProductVariantManagement = () => {
         if (typeof productId === "string") {
           const newVariant = await createVariantForProduct(productId, {
             ...formData,
-            price: formData.price,
-            stock: formData.stock,
+            price: parseFloat(formData.price),
+            stock: parseFloat(formData.stock),
           });
 
           if (formData.default) {
@@ -87,8 +102,8 @@ const ProductVariantManagement = () => {
         setFormData({
           color: "",
           capacity: "",
-          price: 0,
-          stock: 0,
+          price: "",
+          stock: "",
           active: true,
           default: false,
         });
@@ -101,8 +116,8 @@ const ProductVariantManagement = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
-    // setVariants(variants.filter((variant) => variant.id !== id));
+  const handleDelete = async (id: string) => {
+    await deleteVariant(id);
   };
 
   const handleEdit = () => {
@@ -145,6 +160,9 @@ const ProductVariantManagement = () => {
           <div className="lg:col-span-1">
             <div className="bg-card rounded-lg shadow-sm p-6">
               <h2 className="text-lg font-heading mb-6">Add New Variant</h2>
+              <h2 className="text-lg text-primary font-heading mb-6">
+                {product?.name}
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-body mb-2">Color</label>
@@ -196,7 +214,7 @@ const ProductVariantManagement = () => {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          price: parseFloat(e.target.value),
+                          price: e.target.value,
                         })
                       }
                       className="w-full p-2 pl-8 rounded border-input bg-background"
@@ -219,7 +237,7 @@ const ProductVariantManagement = () => {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        stock: parseInt(e.target.value),
+                        stock: e.target.value,
                       })
                     }
                     className="w-full p-2 rounded border-input bg-background"
@@ -336,7 +354,7 @@ const ProductVariantManagement = () => {
                               <FiEdit2 />
                             </button>
                             <button
-                              onClick={() => handleDelete(Number(variant.id))}
+                              onClick={() => handleDelete(variant.id)}
                               className="p-1 hover:text-destructive"
                             >
                               <FiTrash2 />

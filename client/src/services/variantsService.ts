@@ -49,5 +49,5 @@ export const updateVariant = async (
 
 // Delete a variant by ID
 export const deleteVariant = async (variantId: string): Promise<void> => {
-  await instance.delete(`${API_URL}/admin/variants/${variantId}`);
+  await instance.delete(`/admin/variants/${variantId}`);
 };
